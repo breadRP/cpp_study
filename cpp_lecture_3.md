@@ -1,3 +1,359 @@
+# 📚 C++ 배열 & 정렬 정리
+
+## 1. 배열 기본
+
+### ✅ 정적 배열
+
+```cpp
+int arr[5] = {1, 2, 3, 4, 5};
+```
+
+### ✅ 동적 배열
+
+```cpp
+int* arr = new int[n];
+
+// 사용 후
+delete[] arr;
+```
+
+### ⚠️ 주의
+
+* `new` → `delete[]` 반드시 사용
+* 음수 인덱스 ❌
+
+---
+
+## 2. 역순 출력
+
+```cpp
+for (int i = n - 1; i >= 0; i--) {
+    cout << arr[i] << " ";
+}
+```
+
+### ❗ 자주 틀리는 것
+
+```cpp
+for (int i=n-1; i<=0; i--) // ❌
+```
+
+---
+
+## 3. 2차원 배열
+
+### ✅ 동적 할당
+
+```cpp
+int** arr = new int*[rows];
+for (int i = 0; i < rows; i++) {
+    arr[i] = new int[cols];
+}
+```
+
+### ✅ 해제
+
+```cpp
+for (int i = 0; i < rows; i++) {
+    delete[] arr[i];
+}
+delete[] arr;
+```
+
+---
+
+## 4. std::array 사용법
+
+```cpp
+#include <array>
+
+array<int, 5> arr = {1, 2, 3, 4, 5};
+```
+
+### 주요 함수
+
+```cpp
+arr.size();
+arr.at(2);
+arr.front();
+arr.back();
+arr.fill(0);
+```
+
+---
+
+## 5. 최소값 / 최대값
+
+```cpp
+#include <algorithm>
+
+int min_val = *min_element(arr.begin(), arr.end());
+int max_val = *max_element(arr.begin(), arr.end());
+```
+
+### 동시에 구하기
+
+```cpp
+auto p = minmax_element(arr.begin(), arr.end());
+```
+
+---
+
+## 6. 구조체 정렬
+
+```cpp
+#include <algorithm>
+
+struct Student {
+    int score;
+    int age;
+};
+
+bool compare(Student a, Student b) {
+    if (a.score == b.score)
+        return a.age > b.age;
+    return a.score < b.score;
+}
+
+sort(arr, arr + n, compare);
+```
+
+---
+
+## 7. 람다 정렬
+
+```cpp
+sort(v.begin(), v.end(), [](Student a, Student b) {
+    return a.score < b.score;
+});
+```
+
+---
+
+## 8. 버블 정렬
+
+```cpp
+for (int i = 0; i < n - 1; i++) {
+    for (int j = 0; j < n - 1 - i; j++) {
+        if (arr[j] > arr[j + 1]) {
+            swap(arr[j], arr[j + 1]);
+        }
+    }
+}
+```
+
+---
+
+## 9. swap 함수
+
+### 직접 구현
+
+```cpp
+int temp = arr[j];
+arr[j] = arr[j + 1];
+arr[j + 1] = temp;
+```
+
+### 표준 함수
+
+```cpp
+#include <algorithm>
+swap(arr[j], arr[j + 1]);
+```
+
+---
+
+## 🔥 핵심 요약
+
+* 배열: `arr[i]`
+* 역순: `n-1 → 0`
+* 동적 배열: `new` / `delete[]`
+* 2차원: `int**`
+* 정렬: `sort + compare`
+* 최소/최대: `min
+
+# C++ 학습 정리 (포인터, 배열, 정렬, 초기화)
+
+## 1. const & 포인터 문제
+
+### 문제
+invalid conversion from 'const Student*' to 'Student*'
+
+### 원인
+- const 데이터를 일반 포인터로 받으려고 함
+
+### 해결
+```cpp
+const Student* min_stu;
+```
+
+👉 const 데이터 → const 포인터 사용
+
+---
+
+## 2. 버블 정렬 인덱스 실수
+
+### 문제 코드
+```cpp
+if (students[i].points > students[i+1].points)
+```
+
+### 원인
+- i는 패스 변수
+- 실제 비교는 j로 해야 함
+
+### 해결
+```cpp
+if (students[j].points > students[j+1].points)
+```
+
+👉 비교는 항상 j
+
+---
+
+## 3. 최댓값/최솟값 오류 (핵심)
+
+### 문제 코드
+```cpp
+int isMax = students[0].points;
+```
+
+### 문제점
+- double → int 변환 발생
+- 9.9 → 9 (소수점 손실)
+
+---
+
+## 4. C++ 타입 변환 동작
+
+비교 시 내부적으로:
+```cpp
+int → double 변환
+```
+
+예:
+```cpp
+9 → 9.0
+9.0 < 9.5 → true
+```
+
+👉 그래서 9.5가 더 크다고 판단됨
+
+---
+
+## 5. 해결 방법
+
+### 방법 1
+```cpp
+double isMax = students[0].points;
+```
+
+### 방법 2 (추천)
+```cpp
+if (i.points > max_stu->points)
+```
+
+👉 직접 비교 방식이 더 안전
+
+---
+
+## 6. new와 초기화
+
+### 초기화 안 된 경우
+```cpp
+int* p = new int;   // 쓰레기값
+```
+
+### 초기화 방법
+```cpp
+int* p = new int();     // 0으로 초기화
+int* p = new int(5);    // 값 지정
+```
+
+---
+
+## 7. 배열 초기화
+
+### 값 지정
+```cpp
+int* arr = new int[3]{1, 2, 3};
+```
+
+### 전체 0 초기화
+```cpp
+int* arr = new int[3]();
+```
+
+### 주의
+```cpp
+int* arr = new int[3]; // 쓰레기값
+```
+
+👉 배열 초기화는 `{}` 또는 `()` 사용
+
+---
+
+## 8. 2차원 배열 동적 할당
+
+```cpp
+int** arr_2d = new int*[rows];
+
+for (int i = 0; i < rows; i++) {
+    arr_2d[i] = new int[cols]();  // 전체 0 초기화
+}
+```
+
+### 메모리 해제
+```cpp
+for (int i = 0; i < rows; i++)
+    delete[] arr_2d[i];
+
+delete[] arr_2d;
+```
+
+---
+
+## 9. std::array 특징
+
+### 선언
+```cpp
+std::array<int, 5> arr;
+```
+
+### 불가능
+```cpp
+int n;
+std::array<int, n> arr; // 컴파일 에러
+```
+
+👉 크기는 반드시 컴파일 타임에 결정
+
+---
+
+## 10. array vs vector
+
+| 컨테이너 | 크기 |
+|----------|------|
+| std::array | 고정 (컴파일 타임) |
+| std::vector | 동적 (런타임) |
+
+---
+
+## 🎯 핵심 정리
+
+1. const 데이터 → const 포인터 사용
+2. 정렬 비교는 j 인덱스 사용
+3. double 값을 int에 넣으면 버그 발생
+4. new는 초기화 안 하면 쓰레기값
+5. 배열 초기화는 {} 또는 ()
+6. std::array는 컴파일 타임 크기
+
+---
+
+## 🔥 한 줄 요약
+
+C++ 버그의 대부분은 "타입 + 초기화 + 인덱스"에서 발생한다.
+
 # C++ 핵심 정리 (질문 기반 요약)
 
 ---
